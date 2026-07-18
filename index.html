@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Mitchelle</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="wrapper">
+        <div class="proposal-card">
+            
+            <!-- PAGE 1: LETTER CHOICE -->
+            <div class="page active" id="page1">
+                <div style="text-align: center; margin-bottom: 16px;">
+                    <div class="letter-icon-big">💌</div>
+                    <h2 style="color: #f0d6ff; font-weight: 500; margin: 8px 0;">i wrote you something</h2>
+                    <p style="color: #d9b0e0; font-size: 1.1rem;">it's kind of scary to put this out there... but here goes</p>
+                </div>
+                <div class="letter-actions">
+                    <button class="letter-btn" id="openLetterBtn">📩 open it</button>
+                    <button class="letter-btn trash" id="trashLetterBtn">🗑️ not ready</button>
+                </div>
+                <p style="color: #b08ab0; text-align: center; font-size: 0.9rem; margin-top: 12px;">💜 no pressure, whatever you choose is okay</p>
+            </div>
+
+            <!-- PAGE 2: LETTER READING -->
+            <div class="page" id="page2">
+                <div class="letter-content-page">
+                    <h2>hey you,</h2>
+                    <p>okay, so i've been trying to find the right words for days now, and honestly? there's no perfect way to say this. but here goes.</p>
+                    <p>every time i see you, my whole day gets better. like, actually better. the way you laugh, the way you get excited about random things, the way you look at the world — it's just... really beautiful.</p>
+                    <p>i know we're we agreed until after you are done with school, but i can't keep pretending that i am comfortable being just friends.</p>
+                    <div class="big-message">
+                        💕 so i'm just gonna say it: <br>
+                        i really, really like you. and i'd love for you to be my girlfriend.
+                    </div>
+                    <p style="font-size: 1.3rem; text-align: center; font-weight: 700; color: #f0ccff; letter-spacing: 1px;">what do you think? 💜</p>
+                    <p style="font-size: 0.9rem; opacity: 0.7; margin-top: 12px; border-top: 2px dashed #b77ad6; padding-top: 14px; text-align: center;">— no pressure, just honesty. i'll be okay no matter what.</p>
+                </div>
+                <button class="done-btn" id="doneReadingBtn">💜 i've got my answer</button>
+            </div>
+
+            <!-- PAGE 3: PROPOSAL -->
+            <div class="page" id="page3">
+                <div class="proposal-header">
+                    <h1>💜 so... what do you say?</h1>
+                    <p>i meant every word</p>
+                </div>
+
+                <div class="sections-grid">
+                    <div class="section-item">
+                        <img src="https://via.placeholder.com/200/4a1a4a/d9a6ff?text=💫" alt="sparkle">
+                        <p>💫 you make everything sparkle</p>
+                    </div>
+                    <div class="section-item">
+                        <img src="https://via.placeholder.com/200/5a1f5a/e0b0ff?text=🌷" alt="flower">
+                        <p>🌷 like spring after winter</p>
+                    </div>
+                    <div class="section-item">
+                        <img src="https://via.placeholder.com/200/6a2a6a/f0c0ff?text=💜" alt="heart">
+                        <p>💜 my favorite color is you</p>
+                    </div>
+                </div>
+
+
+                <div class="hearts-canvas" id="heartsContainer"></div>
+
+                <div class="button-area" id="buttonArea">
+                    <button class="btn btn-yes" id="yesBtn">💗 yes</button>
+                    <button class="btn btn-no" id="noBtn">💔 no</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Audio Player (hidden, autoplay) -->
+    <audio id="bgMusic" loop>
+        <source src="your-song.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <script src="script.js"></script>
+</body>
+</html>
