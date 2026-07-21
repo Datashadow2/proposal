@@ -7,11 +7,10 @@ const PHOTO_FILENAME = 'IMG_20260719_151641_886.jpg'; // <-- CHANGE THIS
 
 // 🔽 REPLACE WITH YOUR EXTRA PHOTOS (for gallery after "Yes")
 const GALLERY_PHOTOS = [ 
-    'photo2.jpg',                   // <-- Add more photos!
-    'photo3.jpg',
-    'photo4.jpg',
-    'photo5.jpg',
-    'photo6.jpg'
+    '1784379589433.jpg',                   // <-- Add more photos!
+    '1784379820586.jpg',
+    'IMG_20260719_151604_829.jpg',
+    'IMG_20260719_151833_036 (1).jpg'
     // Add as many as you want!
 ];
 
