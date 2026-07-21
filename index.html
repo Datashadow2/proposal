@@ -13,7 +13,6 @@
         <h1>💜 A little something for you...</h1>
         <p>Press play and tap anywhere to begin</p>
         <div class="tap-icon">👆</div>
-        <!-- Audio player is now INSIDE the overlay -->
         <div id="audioPlayerOverlay">
             <button class="play-btn" id="playBtnOverlay" aria-label="Play music">▶️</button>
             <span class="track-name" id="trackNameOverlay">🎵 Nakufa - Okello Max</span>
@@ -25,11 +24,10 @@
         <div class="number" id="countNum">3</div>
     </div>
 
-    <!-- ===== SPARKLE CANVAS ===== -->
+    <!-- ===== CANVASES ===== -->
     <canvas id="sparkleCanvas"></canvas>
-
-    <!-- ===== CONFETTI CANVAS ===== -->
     <canvas id="confettiCanvas"></canvas>
+    <canvas id="rainCanvas"></canvas>
 
     <!-- ===== AUDIO VISUALIZER ===== -->
     <div id="visualizer">
@@ -51,17 +49,18 @@
         <!-- LINE 2 -->
         <div class="story-line" id="line2">Then you smiled... 💕</div>
 
+        <!-- LINE 3 - NEW ORDER -->
         <div class="story-line" id="line3">Then I saw this....</div>
 
-        <!-- PHOTO -->
+        <!-- PHOTO (appears after line 3) -->
         <div id="photoContainer">
             <img id="herPhoto" src="IMG_20260719_151641_886.jpg" alt="Her beautiful smile" />
             <div class="photo-glow"></div>
             <div class="photo-caption">✨ This one right here... ✨</div>
         </div>
 
-        <!-- LINE 3 -->
-        <div class="story-line" id="line3">...and I haven't been the same since. 🌙</div>
+        <!-- LINE 4 - NEW -->
+        <div class="story-line" id="line4">...and I haven't been the same since. 🌙</div>
 
         <!-- TYPEWRITER -->
         <div id="typewriterContainer">
@@ -78,14 +77,6 @@
         <div id="foreverReveal">
             <div class="forever-text" id="foreverText">Forever?</div>
             <div class="response-text" id="responseText">Good. Because I'm not giving you back. 💜</div>
-            
-            <!-- ===== PHOTO GALLERY (NEW!) ===== -->
-            <div id="photoGallery">
-                <h3>Our Memories 💕</h3>
-                <div class="gallery-grid" id="galleryGrid">
-                    <!-- Photos will be added by JavaScript -->
-                </div>
-            </div>
             
             <div id="voucher">
                 <div class="voucher-title">🎬 MOVIE DATE VOUCHER</div>
