@@ -13,8 +13,8 @@ const GALLERY_PHOTOS = [
     'IMG_20260719_151833_036 (1).jpg'
 ];
 
-// 🔽 YOUR SONG (RENAME THIS to something simple like 'song.mp3')
-const SONG_URL = 'Okello Max - Nakufa, Bensoul & Amlyoto [Official Music Video] SMS [SKIZA 5801963] to 811.mp3'  // <-- CHANGE THIS
+// 🔽 YOUR SONG - KEEPING YOUR ORIGINAL FILENAME
+const SONG_URL = 'Okello Max - Nakufa, Bensoul & Amlyoto [Official Music Video] SMS [SKIZA 5801963] to 811.mp3';
 
 // 🔽 YOUR NAME
 const YOUR_NAME = 'Uncle Lee D Papa';
@@ -68,7 +68,70 @@ herPhoto.src = PHOTO_FILENAME;
 yourNameSpan.textContent = YOUR_NAME;
 
 // =============================================================
-// 4. AUDIO SETUP
+// 4. PRE-LOAD ALL IMAGES (FIXES THE "NOT SHOWING" PROBLEM!)
+// =============================================================
+let allImagesLoaded = false;
+let imagesLoadedCount = 0;
+const totalImages = GALLERY_PHOTOS.length;
+let preloadedImageObjects = [];
+
+function preloadImages(callback) {
+    console.log('🔄 Pre-loading images...');
+    
+    GALLERY_PHOTOS.forEach((src, index) => {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        
+        img.onload = () => {
+            imagesLoadedCount++;
+            preloadedImageObjects[index] = img;
+            console.log(`✅ Loaded: ${src} (${imagesLoadedCount}/${totalImages})`);
+            if (imagesLoadedCount === totalImages) {
+                allImagesLoaded = true;
+                console.log('✅ All images pre-loaded successfully!');
+                if (callback) callback();
+            }
+        };
+        
+        img.onerror = () => {
+            console.warn(`⚠️ Could not load: ${src} - trying fallback`);
+            imagesLoadedCount++;
+            // Create a fallback colored square
+            const fallbackImg = new Image();
+            fallbackImg.width = 200;
+            fallbackImg.height = 200;
+            // Draw a colored square as fallback
+            const canvas = document.createElement('canvas');
+            canvas.width = 200;
+            canvas.height = 200;
+            const ctx = canvas.getContext('2d');
+            const colors = ['#ff2a8a', '#d8b4fe', '#ffb3c6', '#ffd700', '#6a0dad'];
+            ctx.fillStyle = colors[index % colors.length];
+            ctx.fillRect(0, 0, 200, 200);
+            ctx.fillStyle = '#fff';
+            ctx.font = '40px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('💜', 100, 100);
+            fallbackImg.src = canvas.toDataURL();
+            preloadedImageObjects[index] = fallbackImg;
+            
+            if (imagesLoadedCount === totalImages) {
+                allImagesLoaded = true;
+                console.log('✅ All images loaded (some with fallbacks)');
+                if (callback) callback();
+            }
+        };
+        
+        img.src = src;
+    });
+}
+
+// Start pre-loading immediately
+preloadImages();
+
+// =============================================================
+// 5. AUDIO SETUP
 // =============================================================
 const audio = new Audio(SONG_URL);
 audio.loop = true;
@@ -98,14 +161,15 @@ function toggleMusic() {
             if (!hasStarted) {
                 overlayText.textContent = '🎵 Music is playing! Tap anywhere to begin';
             }
-        }).catch(() => {
+        }).catch((err) => {
+            console.warn('Audio play error:', err);
             alert('Tap play again to start the music! 🎵');
         });
     }
 }
 
 // =============================================================
-// 5. TAP TO BEGIN
+// 6. TAP TO BEGIN
 // =============================================================
 let hasStarted = false;
 
@@ -128,7 +192,7 @@ overlay.addEventListener('touchstart', (e) => {
 });
 
 // =============================================================
-// 6. COUNTDOWN
+// 7. COUNTDOWN
 // =============================================================
 function showCountdown() {
     countdown.classList.add('show');
@@ -152,7 +216,7 @@ function showCountdown() {
 }
 
 // =============================================================
-// 7. REVEAL STORY
+// 8. REVEAL STORY
 // =============================================================
 function revealStory() {
     storyContainer.classList.add('show');
@@ -188,7 +252,7 @@ function revealStory() {
 }
 
 // =============================================================
-// 8. LOVE LETTERS
+// 9. LOVE LETTERS
 // =============================================================
 function createLoveLetters() {
     const emojis = ['💌', '✉️', '💜', '✨', '💕'];
@@ -268,7 +332,7 @@ function showFlirtyMessage(msg, event) {
 }
 
 // =============================================================
-// 9. TYPEWRITER
+// 10. TYPEWRITER
 // =============================================================
 const proposalText = "So, I have to ask... Will you be my girlfriend? 💜";
 
@@ -291,7 +355,7 @@ function startTypewriter() {
 }
 
 // =============================================================
-// 10. "NO" BUTTON CHASE
+// 11. "NO" BUTTON CHASE
 // =============================================================
 const noBtnEl = document.getElementById('noBtn');
 const noMessages = ["Nice try. 😏", "Not a chance. 💜", "You know you want to. 😘", "Keep dreaming. ✨", "I'm not going anywhere. 😉"];
@@ -315,7 +379,7 @@ noBtnEl.addEventListener('touchstart', (e) => { e.preventDefault(); moveNoButton
 noBtnEl.addEventListener('mouseenter', moveNoButton);
 
 // =============================================================
-// 11. "YES" BUTTON
+// 12. "YES" BUTTON
 // =============================================================
 let hasSaidYes = false;
 
@@ -342,7 +406,7 @@ function sayYes() {
 }
 
 // =============================================================
-// 12. RAINING PHOTOS! 🌧️📸
+// 13. RAINING PHOTOS! 🌧️📸 (FIXED!)
 // =============================================================
 let rainingPhotos = [];
 let rainAnimationRunning = false;
@@ -358,104 +422,110 @@ function startRainingPhotos() {
     canvas.width = w;
     canvas.height = h;
 
+    // Use preloaded images or load fresh
     const images = [];
-    let loadedCount = 0;
-
-    GALLERY_PHOTOS.forEach((src) => {
-        const img = new Image();
-        img.src = src;
-        img.onload = () => { loadedCount++; if (loadedCount === GALLERY_PHOTOS.length) startRain(); };
-        img.onerror = () => { loadedCount++; if (loadedCount === GALLERY_PHOTOS.length) startRain(); };
-        images.push(img);
+    
+    GALLERY_PHOTOS.forEach((src, index) => {
+        if (preloadedImageObjects[index] && preloadedImageObjects[index].complete && preloadedImageObjects[index].naturalWidth > 0) {
+            images.push(preloadedImageObjects[index]);
+        } else {
+            const img = new Image();
+            img.src = src;
+            images.push(img);
+        }
     });
 
-    setTimeout(startRain, 2000);
+    // Start rain immediately
+    for (let i = 0; i < 25; i++) spawnPhoto(images);
 
-    function startRain() {
-        if (!rainAnimationRunning) return;
-        for (let i = 0; i < 20; i++) spawnPhoto();
-        
-        const spawnInterval = setInterval(() => {
-            if (!rainAnimationRunning || !hasSaidYes) { clearInterval(spawnInterval); return; }
-            spawnPhoto();
-        }, 300);
+    const spawnInterval = setInterval(() => {
+        if (!rainAnimationRunning || !hasSaidYes) { clearInterval(spawnInterval); return; }
+        spawnPhoto(images);
+    }, 250);
 
-        function spawnPhoto() {
-            const img = images[Math.floor(Math.random() * images.length)];
-            const size = 60 + Math.random() * 80;
-            rainingPhotos.push({
-                img, x: Math.random() * (w - size), y: -size - Math.random() * 100,
-                size, speed: 1.5 + Math.random() * 2.5, rotation: (Math.random() - 0.5) * 20,
-                rotSpeed: (Math.random() - 0.5) * 2, opacity: 0.7 + Math.random() * 0.3,
-                swing: 0.5 + Math.random() * 1.5, swingOffset: Math.random() * Math.PI * 2,
-                loaded: img.complete && img.naturalWidth > 0
-            });
-        }
-
-        function animateRain() {
-            if (!rainAnimationRunning || !hasSaidYes) {
-                ctx.clearRect(0, 0, w, h);
-                rainingPhotos = [];
-                rainAnimationRunning = false;
-                return;
-            }
-            ctx.clearRect(0, 0, w, h);
-            for (let i = rainingPhotos.length - 1; i >= 0; i--) {
-                const p = rainingPhotos[i];
-                p.y += p.speed;
-                p.rotation += p.rotSpeed;
-                p.x += Math.sin(p.y / 100 + p.swingOffset) * p.swing * 0.3;
-                if (p.y > h + p.size) { rainingPhotos.splice(i, 1); continue; }
-
-                ctx.save();
-                ctx.globalAlpha = p.opacity;
-                ctx.translate(p.x + p.size / 2, p.y + p.size / 2);
-                ctx.rotate((p.rotation * Math.PI) / 180);
-                ctx.shadowColor = 'rgba(255, 42, 138, 0.2)';
-                ctx.shadowBlur = 20;
-
-                const radius = 12;
-                const s = p.size;
-                ctx.beginPath();
-                ctx.moveTo(-s/2 + radius, -s/2);
-                ctx.lineTo(s/2 - radius, -s/2);
-                ctx.quadraticCurveTo(s/2, -s/2, s/2, -s/2 + radius);
-                ctx.lineTo(s/2, s/2 - radius);
-                ctx.quadraticCurveTo(s/2, s/2, s/2 - radius, s/2);
-                ctx.lineTo(-s/2 + radius, s/2);
-                ctx.quadraticCurveTo(-s/2, s/2, -s/2, s/2 - radius);
-                ctx.lineTo(-s/2, -s/2 + radius);
-                ctx.quadraticCurveTo(-s/2, -s/2, -s/2 + radius, -s/2);
-                ctx.closePath();
-                ctx.clip();
-
-                if (p.loaded && p.img.complete && p.img.naturalWidth > 0) {
-                    ctx.drawImage(p.img, -s/2, -s/2, s, s);
-                } else {
-                    ctx.fillStyle = '#4a0e4e';
-                    ctx.fillRect(-s/2, -s/2, s, s);
-                    ctx.fillStyle = '#ff2a8a';
-                    ctx.font = `${s/2}px sans-serif`;
-                    ctx.textAlign = 'center';
-                    ctx.textBaseline = 'middle';
-                    ctx.fillText('💜', 0, 0);
-                }
-
-                ctx.shadowBlur = 0;
-                ctx.strokeStyle = 'rgba(216, 180, 254, 0.3)';
-                ctx.lineWidth = 2;
-                ctx.strokeRect(-s/2, -s/2, s, s);
-                ctx.restore();
-            }
-            requestAnimationFrame(animateRain);
-        }
-        animateRain();
-        window._rainSpawnInterval = spawnInterval;
+    function spawnPhoto(imgs) {
+        const img = imgs[Math.floor(Math.random() * imgs.length)];
+        const size = 60 + Math.random() * 80;
+        rainingPhotos.push({
+            img: img,
+            x: Math.random() * (w - size),
+            y: -size - Math.random() * 100,
+            size: size,
+            speed: 1.5 + Math.random() * 2.5,
+            rotation: (Math.random() - 0.5) * 20,
+            rotSpeed: (Math.random() - 0.5) * 2,
+            opacity: 0.7 + Math.random() * 0.3,
+            swing: 0.5 + Math.random() * 1.5,
+            swingOffset: Math.random() * Math.PI * 2,
+            loaded: img.complete && img.naturalWidth > 0
+        });
     }
+
+    function animateRain() {
+        if (!rainAnimationRunning || !hasSaidYes) {
+            ctx.clearRect(0, 0, w, h);
+            rainingPhotos = [];
+            rainAnimationRunning = false;
+            return;
+        }
+        ctx.clearRect(0, 0, w, h);
+        for (let i = rainingPhotos.length - 1; i >= 0; i--) {
+            const p = rainingPhotos[i];
+            p.y += p.speed;
+            p.rotation += p.rotSpeed;
+            p.x += Math.sin(p.y / 100 + p.swingOffset) * p.swing * 0.3;
+            if (p.y > h + p.size) { rainingPhotos.splice(i, 1); continue; }
+
+            ctx.save();
+            ctx.globalAlpha = p.opacity;
+            ctx.translate(p.x + p.size / 2, p.y + p.size / 2);
+            ctx.rotate((p.rotation * Math.PI) / 180);
+            ctx.shadowColor = 'rgba(255, 42, 138, 0.2)';
+            ctx.shadowBlur = 20;
+
+            const radius = 12;
+            const s = p.size;
+            ctx.beginPath();
+            ctx.moveTo(-s/2 + radius, -s/2);
+            ctx.lineTo(s/2 - radius, -s/2);
+            ctx.quadraticCurveTo(s/2, -s/2, s/2, -s/2 + radius);
+            ctx.lineTo(s/2, s/2 - radius);
+            ctx.quadraticCurveTo(s/2, s/2, s/2 - radius, s/2);
+            ctx.lineTo(-s/2 + radius, s/2);
+            ctx.quadraticCurveTo(-s/2, s/2, -s/2, s/2 - radius);
+            ctx.lineTo(-s/2, -s/2 + radius);
+            ctx.quadraticCurveTo(-s/2, -s/2, -s/2 + radius, -s/2);
+            ctx.closePath();
+            ctx.clip();
+
+            // Check if image is loaded
+            if (p.loaded && p.img.complete && p.img.naturalWidth > 0) {
+                ctx.drawImage(p.img, -s/2, -s/2, s, s);
+            } else {
+                // Fallback: colored square with heart
+                ctx.fillStyle = '#4a0e4e';
+                ctx.fillRect(-s/2, -s/2, s, s);
+                ctx.fillStyle = '#ff2a8a';
+                ctx.font = `${s/2}px sans-serif`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('💜', 0, 0);
+            }
+
+            ctx.shadowBlur = 0;
+            ctx.strokeStyle = 'rgba(216, 180, 254, 0.3)';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(-s/2, -s/2, s, s);
+            ctx.restore();
+        }
+        requestAnimationFrame(animateRain);
+    }
+    animateRain();
+    window._rainSpawnInterval = spawnInterval;
 }
 
 // =============================================================
-// 13. CONFETTI
+// 14. CONFETTI
 // =============================================================
 let confettiPieces = [];
 let confettiRunning = false;
@@ -532,7 +602,7 @@ function launchConfetti() {
 }
 
 // =============================================================
-// 14. SPARKLE SYSTEM (Mobile-Friendly!)
+// 15. SPARKLE SYSTEM (Mobile-Friendly!)
 // =============================================================
 let sparkles = [];
 
@@ -562,7 +632,6 @@ function initSparkleCanvas() {
     }
 
     function handleTap(e) {
-        // IGNORE taps on buttons, links, or interactive elements
         const target = e.target;
         if (target.closest('button') || target.closest('.btn') || target.closest('.btn-yes') || 
             target.closest('.btn-no') || target.closest('#yesBtn') || target.closest('#noBtn') ||
@@ -621,7 +690,7 @@ function initSparkleCanvas() {
 initSparkleCanvas();
 
 // =============================================================
-// 15. SHARE BUTTON
+// 16. SHARE BUTTON
 // =============================================================
 shareBtn.addEventListener('click', () => {
     if (navigator.share) {
@@ -636,7 +705,7 @@ shareBtn.addEventListener('click', () => {
 });
 
 // =============================================================
-// 16. HANDLE RESIZE
+// 17. HANDLE RESIZE
 // =============================================================
 window.addEventListener('resize', () => {
     const w = window.innerWidth, h = window.innerHeight;
@@ -646,7 +715,7 @@ window.addEventListener('resize', () => {
 });
 
 // =============================================================
-// 17. KEYBOARD SHORTCUT
+// 18. KEYBOARD SHORTCUT
 // =============================================================
 document.addEventListener('keydown', (e) => {
     if ((e.key === 'y' || e.key === 'Y') && !hasSaidYes && btnContainer.classList.contains('show')) {
@@ -656,3 +725,4 @@ document.addEventListener('keydown', (e) => {
 
 console.log('💜 She\'s about to say yes... ✨');
 console.log('💕 Made with love for Uncle Lee D Papa');
+console.log(`📸 Looking for ${totalImages} images...`);
