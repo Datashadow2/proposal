@@ -14,7 +14,7 @@ const GALLERY_PHOTOS = [
 ];
 
 // 🔽 YOUR SONG (RENAME THIS to something simple like 'song.mp3')
-const SONG_URL = 'Okello Max - Nakufa, Bensoul & Amlyoto [Official Music Video] SMS [SKIZA 5801963] to 811.mp3';  // <-- CHANGE THIS
+const SONG_URL = 'Okello Max - Nakufa, Bensoul & Amlyoto [Official Music Video] SMS [SKIZA 5801963] to 811.mp3'  // <-- CHANGE THIS
 
 // 🔽 YOUR NAME
 const YOUR_NAME = 'Uncle Lee D Papa';
