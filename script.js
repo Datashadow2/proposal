@@ -3,22 +3,24 @@
 // =============================================================
 
 // 🔽 REPLACE WITH YOUR PHOTO FILENAME
-const PHOTO_FILENAME = 'IMG_20260719_151641_886.jpg'; // <-- CHANGE THIS
+const PHOTO_FILENAME = 'IMG_20260719_151641_886.jpg';
 
-// 🔽 REPLACE WITH YOUR EXTRA PHOTOS (for gallery after "Yes")
-const GALLERY_PHOTOS = [ 
-    '1784379589433.jpg',                   // <-- Add more photos!
+// 🔽 REPLACE WITH YOUR EXTRA PHOTOS (for raining gallery after "Yes")
+const GALLERY_PHOTOS = [
+    'IMG_20260719_151641_886.jpg',
+    '1784379589433.jpg',
     '1784379820586.jpg',
     'IMG_20260719_151604_829.jpg',
+    'IMG_20260719_151641_886.jpg',
     'IMG_20260719_151833_036 (1).jpg'
-    // Add as many as you want!
+    // Add as many as you want – they'll rain down like confetti!
 ];
 
-// 🔽 REPLACE WITH HER FAVORITE SONG (MP3 URL or local file path)
-const SONG_URL = 'Okello Max - Nakufa, Bensoul & Amlyoto [Official Music Video] SMS [SKIZA 5801963] to 811.mp3'; // <-- CHANGE THIS
+// 🔽 REPLACE WITH HER FAVORITE SONG
+const SONG_URL = 'Okello Max - Nakufa, Bensoul & Amlyoto [Official Music Video] SMS [SKIZA 5801963] to 811.mp3';
 
-// 🔽 REPLACE WITH YOUR NAME (for the voucher)
-const YOUR_NAME = 'Uncle Lee D Papa'; // <-- CHANGE THIS
+// 🔽 REPLACE WITH YOUR NAME
+const YOUR_NAME = 'Uncle Lee D Papa';
 
 // 🔽 FLIRTY MESSAGES FOR LOVE LETTERS
 const FLIRTY_MESSAGES = [
@@ -44,16 +46,19 @@ const sCtx = sparkleCanvas.getContext('2d');
 const confettiCanvas = document.getElementById('confettiCanvas');
 const cCtx = confettiCanvas.getContext('2d');
 
+const rainCanvas = document.getElementById('rainCanvas');
+const rCtx = rainCanvas.getContext('2d');
+
 const visualizer = document.getElementById('visualizer');
 const bars = document.querySelectorAll('#visualizer .bar');
 
-// Audio elements
 const playBtnOverlay = document.getElementById('playBtnOverlay');
 const trackNameOverlay = document.getElementById('trackNameOverlay');
 
 const line1 = document.getElementById('line1');
 const line2 = document.getElementById('line2');
 const line3 = document.getElementById('line3');
+const line4 = document.getElementById('line4');
 const photoContainer = document.getElementById('photoContainer');
 const herPhoto = document.getElementById('herPhoto');
 
@@ -70,10 +75,6 @@ const voucher = document.getElementById('voucher');
 const shareBtn = document.getElementById('shareBtn');
 const yourNameSpan = document.getElementById('yourName');
 
-// Gallery
-const photoGallery = document.getElementById('photoGallery');
-const galleryGrid = document.getElementById('galleryGrid');
-
 // =============================================================
 // 3. SET PHOTO & NAME
 // =============================================================
@@ -88,9 +89,7 @@ audio.loop = true;
 audio.preload = 'auto';
 
 let isPlaying = false;
-let musicStarted = false; // Track if music has been started
 
-// Play button in overlay
 playBtnOverlay.addEventListener('click', (e) => {
     e.stopPropagation();
     toggleMusic();
@@ -107,8 +106,6 @@ function toggleMusic() {
             playBtnOverlay.textContent = '⏸️';
             visualizer.classList.add('active');
             isPlaying = true;
-            musicStarted = true;
-            // Enable tap to begin if not already started
             if (!hasStarted) {
                 overlay.querySelector('p').textContent = '🎵 Music is playing! Tap anywhere to begin';
                 overlay.querySelector('.tap-icon').style.animation = 'bounce 0.8s infinite';
@@ -174,9 +171,7 @@ let hasStarted = false;
 function startExperience() {
     if (hasStarted) return;
     
-    // Check if music is playing
     if (!isPlaying) {
-        // Flash the play button to get attention
         playBtnOverlay.style.animation = 'bounce 0.5s 3';
         setTimeout(() => {
             playBtnOverlay.style.animation = '';
@@ -220,43 +215,50 @@ function showCountdown() {
 }
 
 // =============================================================
-// 8. REVEAL STORY SEQUENCE
+// 8. REVEAL STORY SEQUENCE (NEW ORDER!)
 // =============================================================
 function revealStory() {
     storyContainer.classList.add('show');
 
-    // Show line 1 after 0.5s
+    // 1. "I was fine before you..." after 0.5s
     setTimeout(() => {
         line1.classList.add('visible');
     }, 500);
 
-    // Show line 2 after 2.5s
+    // 2. "Then you smiled..." after 2.5s
     setTimeout(() => {
         line1.classList.remove('visible');
         line1.classList.add('hidden-line');
         line2.classList.add('visible');
     }, 2500);
 
-    // Show photo after 4.5s
+    // 3. "Then I saw this...." after 4.5s
     setTimeout(() => {
         line2.classList.remove('visible');
         line2.classList.add('hidden-line');
-        photoContainer.classList.add('visible');
+        line3.classList.add('visible');
     }, 4500);
 
-    // Show line 3 after 7s
+    // 4. PHOTO appears after 6.5s (while line3 is still visible)
+    setTimeout(() => {
+        photoContainer.classList.add('visible');
+    }, 6500);
+
+    // 5. "...and I haven't been the same since." after 9s (photo stays, then fades)
     setTimeout(() => {
         photoContainer.classList.remove('visible');
-        line3.classList.add('visible');
-    }, 7000);
-
-    // Show typewriter after 9s
-    setTimeout(() => {
         line3.classList.remove('visible');
         line3.classList.add('hidden-line');
+        line4.classList.add('visible');
+    }, 9000);
+
+    // 6. Typewriter after 11s
+    setTimeout(() => {
+        line4.classList.remove('visible');
+        line4.classList.add('hidden-line');
         typewriterContainer.classList.add('show');
         startTypewriter();
-    }, 9000);
+    }, 11000);
 
     // Create floating love letters
     createLoveLetters();
@@ -298,25 +300,25 @@ function createLoveLetters() {
 function showFlirtyMessage(msg, event) {
     const popup = document.createElement('div');
     popup.style.cssText = `
-                position: fixed;
-                z-index: 200;
-                background: rgba(26, 11, 30, 0.92);
-                backdrop-filter: blur(16px);
-                border: 1px solid rgba(216, 180, 254, 0.3);
-                border-radius: 20px;
-                padding: 1.2rem 1.8rem;
-                color: #ffb3c6;
-                font-size: clamp(0.95rem, 2.5vw, 1.3rem);
-                max-width: 300px;
-                text-align: center;
-                box-shadow: 0 0 60px rgba(255, 42, 138, 0.15);
-                pointer-events: none;
-                opacity: 0;
-                transform: scale(0.8);
-                transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-                font-weight: 500;
-                line-height: 1.5;
-            `;
+        position: fixed;
+        z-index: 200;
+        background: rgba(26, 11, 30, 0.92);
+        backdrop-filter: blur(16px);
+        border: 1px solid rgba(216, 180, 254, 0.3);
+        border-radius: 20px;
+        padding: 1.2rem 1.8rem;
+        color: #ffb3c6;
+        font-size: clamp(0.95rem, 2.5vw, 1.3rem);
+        max-width: 300px;
+        text-align: center;
+        box-shadow: 0 0 60px rgba(255, 42, 138, 0.15);
+        pointer-events: none;
+        opacity: 0;
+        transform: scale(0.8);
+        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        font-weight: 500;
+        line-height: 1.5;
+    `;
     popup.textContent = msg;
 
     let x, y;
@@ -429,7 +431,7 @@ noBtnEl.addEventListener('mouseenter', () => {
 });
 
 // =============================================================
-// 12. "YES" BUTTON – CONFETTI + FOREVER + GALLERY
+// 12. "YES" BUTTON – CONFETTI + FOREVER + RAINING PHOTOS!
 // =============================================================
 let hasSaidYes = false;
 
@@ -460,9 +462,8 @@ function sayYes() {
     setTimeout(() => {
         voucher.classList.add('show');
         shareBtn.classList.add('show');
-        // Show photo gallery
-        photoGallery.classList.add('show');
-        loadGallery();
+        // START RAINING PHOTOS! 🌧️📸
+        startRainingPhotos();
     }, 1400);
 
     launchConfetti();
@@ -477,87 +478,174 @@ function sayYes() {
 }
 
 // =============================================================
-// 13. PHOTO GALLERY (NEW!)
+// 13. RAINING PHOTOS SYSTEM! 🌧️📸
 // =============================================================
-function loadGallery() {
-    galleryGrid.innerHTML = '';
-    
-    // Use the first photo as the main one if gallery is empty
-    const photos = GALLERY_PHOTOS.length > 0 ? GALLERY_PHOTOS : [PHOTO_FILENAME];
-    
-    photos.forEach((photo, index) => {
-        const item = document.createElement('div');
-        item.className = 'gallery-item';
-        
-        const img = document.createElement('img');
-        img.src = photo;
-        img.alt = `Memory ${index + 1}`;
-        img.loading = 'lazy';
-        
-        // Add click to enlarge effect
-        item.addEventListener('click', () => {
-            enlargePhoto(photo);
-        });
-        
-        const overlay = document.createElement('div');
-        overlay.className = 'gallery-overlay';
-        overlay.textContent = '💜';
-        
-        item.appendChild(img);
-        item.appendChild(overlay);
-        galleryGrid.appendChild(item);
-    });
-}
+let rainingPhotos = [];
+let rainAnimationRunning = false;
 
-function enlargePhoto(src) {
-    // Create a full-size overlay
-    const overlay = document.createElement('div');
-    overlay.style.cssText = `
-        position: fixed;
-        inset: 0;
-        z-index: 9999;
-        background: rgba(0, 0, 0, 0.92);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        animation: fadeIn 0.3s ease;
-    `;
-    
-    const img = document.createElement('img');
-    img.src = src;
-    img.style.cssText = `
-        max-width: 90%;
-        max-height: 90%;
-        border-radius: 16px;
-        box-shadow: 0 0 80px rgba(255, 42, 138, 0.3);
-        border: 3px solid rgba(216, 180, 254, 0.2);
-        animation: scaleIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-    `;
-    
-    overlay.appendChild(img);
-    document.body.appendChild(overlay);
-    
-    overlay.addEventListener('click', () => {
-        overlay.style.opacity = '0';
-        setTimeout(() => overlay.remove(), 300);
+function startRainingPhotos() {
+    if (rainAnimationRunning || GALLERY_PHOTOS.length === 0) return;
+    rainAnimationRunning = true;
+
+    const canvas = rainCanvas;
+    const ctx = rCtx;
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    canvas.width = w;
+    canvas.height = h;
+
+    // Pre-load all images
+    const images = [];
+    let loadedCount = 0;
+
+    GALLERY_PHOTOS.forEach((src, index) => {
+        const img = new Image();
+        img.src = src;
+        img.onload = () => {
+            loadedCount++;
+            // Start animation once all images are loaded or after 2s
+            if (loadedCount === GALLERY_PHOTOS.length) {
+                startRainAnimation();
+            }
+        };
+        img.onerror = () => {
+            loadedCount++;
+            if (loadedCount === GALLERY_PHOTOS.length) {
+                startRainAnimation();
+            }
+        };
+        images.push(img);
     });
-    
-    // Add keyframe styles if not already present
-    if (!document.getElementById('galleryStyles')) {
-        const style = document.createElement('style');
-        style.id = 'galleryStyles';
-        style.textContent = `
-            @keyframes fadeIn {
-                from { opacity: 0; }
-                to { opacity: 1; }
+
+    // Fallback: start after 2s even if images not loaded
+    setTimeout(() => {
+        if (!rainAnimationRunning) return;
+        startRainAnimation();
+    }, 2000);
+
+    function startRainAnimation() {
+        if (!rainAnimationRunning) return;
+        
+        // Create initial batch of raining photos
+        for (let i = 0; i < 20; i++) {
+            spawnPhoto();
+        }
+
+        // Spawn new photos continuously
+        const spawnInterval = setInterval(() => {
+            if (!rainAnimationRunning || !hasSaidYes) {
+                clearInterval(spawnInterval);
+                return;
             }
-            @keyframes scaleIn {
-                from { transform: scale(0.5); opacity: 0; }
-                to { transform: scale(1); opacity: 1; }
+            spawnPhoto();
+        }, 300);
+
+        function spawnPhoto() {
+            const img = images[Math.floor(Math.random() * images.length)];
+            const size = 60 + Math.random() * 80; // 60-140px
+            const x = Math.random() * (w - size);
+            const y = -size - Math.random() * 100;
+            const speed = 1.5 + Math.random() * 2.5;
+            const rotation = (Math.random() - 0.5) * 20;
+            const rotSpeed = (Math.random() - 0.5) * 2;
+            const opacity = 0.7 + Math.random() * 0.3;
+            const swing = 0.5 + Math.random() * 1.5;
+
+            rainingPhotos.push({
+                img: img,
+                x: x,
+                y: y,
+                size: size,
+                speed: speed,
+                rotation: rotation,
+                rotSpeed: rotSpeed,
+                opacity: opacity,
+                swing: swing,
+                swingOffset: Math.random() * Math.PI * 2,
+                loaded: img.complete && img.naturalWidth > 0
+            });
+        }
+
+        // Animate!
+        function animateRain() {
+            if (!rainAnimationRunning || !hasSaidYes) {
+                ctx.clearRect(0, 0, w, h);
+                rainingPhotos = [];
+                rainAnimationRunning = false;
+                return;
             }
-        `;
-        document.head.appendChild(style);
+
+            ctx.clearRect(0, 0, w, h);
+
+            for (let i = rainingPhotos.length - 1; i >= 0; i--) {
+                const p = rainingPhotos[i];
+                
+                // Update position
+                p.y += p.speed;
+                p.rotation += p.rotSpeed;
+                p.x += Math.sin(p.y / 100 + p.swingOffset) * p.swing * 0.3;
+
+                // Remove if off screen
+                if (p.y > h + p.size) {
+                    rainingPhotos.splice(i, 1);
+                    continue;
+                }
+
+                // Draw the photo
+                ctx.save();
+                ctx.globalAlpha = p.opacity;
+                ctx.translate(p.x + p.size / 2, p.y + p.size / 2);
+                ctx.rotate((p.rotation * Math.PI) / 180);
+                
+                // Shadow for depth
+                ctx.shadowColor = 'rgba(255, 42, 138, 0.2)';
+                ctx.shadowBlur = 20;
+                
+                // Draw rounded rect photo
+                const radius = 12;
+                const s = p.size;
+                ctx.beginPath();
+                ctx.moveTo(-s/2 + radius, -s/2);
+                ctx.lineTo(s/2 - radius, -s/2);
+                ctx.quadraticCurveTo(s/2, -s/2, s/2, -s/2 + radius);
+                ctx.lineTo(s/2, s/2 - radius);
+                ctx.quadraticCurveTo(s/2, s/2, s/2 - radius, s/2);
+                ctx.lineTo(-s/2 + radius, s/2);
+                ctx.quadraticCurveTo(-s/2, s/2, -s/2, s/2 - radius);
+                ctx.lineTo(-s/2, -s/2 + radius);
+                ctx.quadraticCurveTo(-s/2, -s/2, -s/2 + radius, -s/2);
+                ctx.closePath();
+                ctx.clip();
+
+                if (p.loaded && p.img.complete && p.img.naturalWidth > 0) {
+                    ctx.drawImage(p.img, -s/2, -s/2, s, s);
+                } else {
+                    // Fallback: colored square
+                    ctx.fillStyle = '#4a0e4e';
+                    ctx.fillRect(-s/2, -s/2, s, s);
+                    ctx.fillStyle = '#ff2a8a';
+                    ctx.font = `${s/2}px sans-serif`;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText('💜', 0, 0);
+                }
+
+                // Border
+                ctx.shadowBlur = 0;
+                ctx.strokeStyle = 'rgba(216, 180, 254, 0.3)';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(-s/2, -s/2, s, s);
+
+                ctx.restore();
+            }
+
+            requestAnimationFrame(animateRain);
+        }
+
+        animateRain();
+
+        // Store interval for cleanup
+        window._rainSpawnInterval = spawnInterval;
     }
 }
 
@@ -672,7 +760,7 @@ function launchConfetti() {
 }
 
 // =============================================================
-// 15. SPARKLE SYSTEM (Tap anywhere → burst of stars)
+// 15. SPARKLE SYSTEM
 // =============================================================
 let sparkles = [];
 
@@ -758,7 +846,6 @@ function initSparkleCanvas() {
                 ctx.shadowColor = s.color;
                 ctx.shadowBlur = 12;
 
-                const half = size / 2;
                 ctx.beginPath();
                 for (let j = 0; j < 8; j++) {
                     const angle = (j / 8) * Math.PI * 2;
@@ -814,10 +901,12 @@ window.addEventListener('resize', () => {
     sparkleCanvas.height = h;
     confettiCanvas.width = w;
     confettiCanvas.height = h;
+    rainCanvas.width = w;
+    rainCanvas.height = h;
 });
 
 // =============================================================
-// 18. KEYBOARD SHORTCUT (Easter egg)
+// 18. KEYBOARD SHORTCUT
 // =============================================================
 document.addEventListener('keydown', (e) => {
     if ((e.key === 'y' || e.key === 'Y') && !hasSaidYes) {
