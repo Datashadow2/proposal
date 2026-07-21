@@ -3,10 +3,10 @@
 // =============================================================
 
 // 🔽 REPLACE WITH YOUR PHOTO FILENAME
-const PHOTO_FILENAME = 'her-photo.jpg'; // <-- CHANGE THIS
+const PHOTO_FILENAME = 'IMG_20260719_151641_886.jpg'; // <-- CHANGE THIS
 
 // 🔽 REPLACE WITH HER FAVORITE SONG (MP3 URL or local file path)
-const SONG_URL = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'; // <-- CHANGE THIS
+const SONG_URL = 'Okello Max - Nakufa, Bensoul & Amlyoto [Official Music Video] SMS [SKIZA 5801963] to 811.mp3'; // <-- CHANGE THIS
 
 // 🔽 REPLACE WITH YOUR NAME (for the voucher)
 const YOUR_NAME = 'Uncle Lee D Papa'; // <-- CHANGE THIS
