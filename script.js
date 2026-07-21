@@ -5,6 +5,16 @@
 // 🔽 REPLACE WITH YOUR PHOTO FILENAME
 const PHOTO_FILENAME = 'IMG_20260719_151641_886.jpg'; // <-- CHANGE THIS
 
+// 🔽 REPLACE WITH YOUR EXTRA PHOTOS (for gallery after "Yes")
+const GALLERY_PHOTOS = [ 
+    'photo2.jpg',                   // <-- Add more photos!
+    'photo3.jpg',
+    'photo4.jpg',
+    'photo5.jpg',
+    'photo6.jpg'
+    // Add as many as you want!
+];
+
 // 🔽 REPLACE WITH HER FAVORITE SONG (MP3 URL or local file path)
 const SONG_URL = 'Okello Max - Nakufa, Bensoul & Amlyoto [Official Music Video] SMS [SKIZA 5801963] to 811.mp3'; // <-- CHANGE THIS
 
@@ -38,8 +48,9 @@ const cCtx = confettiCanvas.getContext('2d');
 const visualizer = document.getElementById('visualizer');
 const bars = document.querySelectorAll('#visualizer .bar');
 
-const playBtn = document.getElementById('playBtn');
-const trackName = document.getElementById('trackName');
+// Audio elements
+const playBtnOverlay = document.getElementById('playBtnOverlay');
+const trackNameOverlay = document.getElementById('trackNameOverlay');
 
 const line1 = document.getElementById('line1');
 const line2 = document.getElementById('line2');
@@ -60,6 +71,10 @@ const voucher = document.getElementById('voucher');
 const shareBtn = document.getElementById('shareBtn');
 const yourNameSpan = document.getElementById('yourName');
 
+// Gallery
+const photoGallery = document.getElementById('photoGallery');
+const galleryGrid = document.getElementById('galleryGrid');
+
 // =============================================================
 // 3. SET PHOTO & NAME
 // =============================================================
@@ -74,26 +89,38 @@ audio.loop = true;
 audio.preload = 'auto';
 
 let isPlaying = false;
+let musicStarted = false; // Track if music has been started
 
-playBtn.addEventListener('click', (e) => {
+// Play button in overlay
+playBtnOverlay.addEventListener('click', (e) => {
     e.stopPropagation();
+    toggleMusic();
+});
+
+function toggleMusic() {
     if (isPlaying) {
         audio.pause();
-        playBtn.textContent = '▶️';
+        playBtnOverlay.textContent = '▶️';
         visualizer.classList.remove('active');
         isPlaying = false;
     } else {
         audio.play().then(() => {
-            playBtn.textContent = '⏸️';
+            playBtnOverlay.textContent = '⏸️';
             visualizer.classList.add('active');
             isPlaying = true;
+            musicStarted = true;
+            // Enable tap to begin if not already started
+            if (!hasStarted) {
+                overlay.querySelector('p').textContent = '🎵 Music is playing! Tap anywhere to begin';
+                overlay.querySelector('.tap-icon').style.animation = 'bounce 0.8s infinite';
+            }
         }).catch(() => {
             alert('Tap play again to start the music! 🎵');
         });
     }
-});
+}
 
-trackName.textContent = '🎵 Her Song';
+trackNameOverlay.textContent = '🎵 Nakufa - Okello Max';
 
 // =============================================================
 // 5. AUDIO VISUALIZER
@@ -141,12 +168,23 @@ if (window.AudioContext || window.webkitAudioContext) {
 }
 
 // =============================================================
-// 6. TAP TO BEGIN
+// 6. TAP TO BEGIN (MUSIC MUST BE PLAYING)
 // =============================================================
 let hasStarted = false;
 
 function startExperience() {
     if (hasStarted) return;
+    
+    // Check if music is playing
+    if (!isPlaying) {
+        // Flash the play button to get attention
+        playBtnOverlay.style.animation = 'bounce 0.5s 3';
+        setTimeout(() => {
+            playBtnOverlay.style.animation = '';
+        }, 1500);
+        return;
+    }
+    
     hasStarted = true;
     overlay.classList.add('hidden');
     showCountdown();
@@ -392,7 +430,7 @@ noBtnEl.addEventListener('mouseenter', () => {
 });
 
 // =============================================================
-// 12. "YES" BUTTON – CONFETTI + FOREVER
+// 12. "YES" BUTTON – CONFETTI + FOREVER + GALLERY
 // =============================================================
 let hasSaidYes = false;
 
@@ -423,6 +461,9 @@ function sayYes() {
     setTimeout(() => {
         voucher.classList.add('show');
         shareBtn.classList.add('show');
+        // Show photo gallery
+        photoGallery.classList.add('show');
+        loadGallery();
     }, 1400);
 
     launchConfetti();
@@ -430,14 +471,99 @@ function sayYes() {
     visualizer.classList.add('active');
     if (!isPlaying) {
         audio.play().then(() => {
-            playBtn.textContent = '⏸️';
+            playBtnOverlay.textContent = '⏸️';
             isPlaying = true;
         }).catch(() => {});
     }
 }
 
 // =============================================================
-// 13. CONFETTI SYSTEM
+// 13. PHOTO GALLERY (NEW!)
+// =============================================================
+function loadGallery() {
+    galleryGrid.innerHTML = '';
+    
+    // Use the first photo as the main one if gallery is empty
+    const photos = GALLERY_PHOTOS.length > 0 ? GALLERY_PHOTOS : [PHOTO_FILENAME];
+    
+    photos.forEach((photo, index) => {
+        const item = document.createElement('div');
+        item.className = 'gallery-item';
+        
+        const img = document.createElement('img');
+        img.src = photo;
+        img.alt = `Memory ${index + 1}`;
+        img.loading = 'lazy';
+        
+        // Add click to enlarge effect
+        item.addEventListener('click', () => {
+            enlargePhoto(photo);
+        });
+        
+        const overlay = document.createElement('div');
+        overlay.className = 'gallery-overlay';
+        overlay.textContent = '💜';
+        
+        item.appendChild(img);
+        item.appendChild(overlay);
+        galleryGrid.appendChild(item);
+    });
+}
+
+function enlargePhoto(src) {
+    // Create a full-size overlay
+    const overlay = document.createElement('div');
+    overlay.style.cssText = `
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        background: rgba(0, 0, 0, 0.92);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        animation: fadeIn 0.3s ease;
+    `;
+    
+    const img = document.createElement('img');
+    img.src = src;
+    img.style.cssText = `
+        max-width: 90%;
+        max-height: 90%;
+        border-radius: 16px;
+        box-shadow: 0 0 80px rgba(255, 42, 138, 0.3);
+        border: 3px solid rgba(216, 180, 254, 0.2);
+        animation: scaleIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    `;
+    
+    overlay.appendChild(img);
+    document.body.appendChild(overlay);
+    
+    overlay.addEventListener('click', () => {
+        overlay.style.opacity = '0';
+        setTimeout(() => overlay.remove(), 300);
+    });
+    
+    // Add keyframe styles if not already present
+    if (!document.getElementById('galleryStyles')) {
+        const style = document.createElement('style');
+        style.id = 'galleryStyles';
+        style.textContent = `
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+            @keyframes scaleIn {
+                from { transform: scale(0.5); opacity: 0; }
+                to { transform: scale(1); opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+}
+
+// =============================================================
+// 14. CONFETTI SYSTEM
 // =============================================================
 let confettiPieces = [];
 let confettiRunning = false;
@@ -547,7 +673,7 @@ function launchConfetti() {
 }
 
 // =============================================================
-// 14. SPARKLE SYSTEM (Tap anywhere → burst of stars)
+// 15. SPARKLE SYSTEM (Tap anywhere → burst of stars)
 // =============================================================
 let sparkles = [];
 
@@ -658,7 +784,7 @@ function initSparkleCanvas() {
 initSparkleCanvas();
 
 // =============================================================
-// 15. SHARE BUTTON
+// 16. SHARE BUTTON
 // =============================================================
 shareBtn.addEventListener('click', () => {
     const shareData = {
@@ -680,7 +806,7 @@ shareBtn.addEventListener('click', () => {
 });
 
 // =============================================================
-// 16. HANDLE RESIZE
+// 17. HANDLE RESIZE
 // =============================================================
 window.addEventListener('resize', () => {
     const w = window.innerWidth;
@@ -692,7 +818,7 @@ window.addEventListener('resize', () => {
 });
 
 // =============================================================
-// 17. KEYBOARD SHORTCUT (Easter egg)
+// 18. KEYBOARD SHORTCUT (Easter egg)
 // =============================================================
 document.addEventListener('keydown', (e) => {
     if ((e.key === 'y' || e.key === 'Y') && !hasSaidYes) {
@@ -703,4 +829,4 @@ document.addEventListener('keydown', (e) => {
 });
 
 console.log('💜 She\'s about to say yes... ✨');
-console.log('💕 Made with love for someone special.');
+console.log('💕 Made with love for Uncle Lee D Papa');
