@@ -8,14 +8,14 @@
 </head>
 <body>
 
-    <!-- ===== TAP TO BEGIN OVERLAY ===== -->
+    <!-- ===== OVERLAY ===== -->
     <div id="overlay">
         <h1>💜 A little something for you...</h1>
-        <p>Press play and tap anywhere to begin</p>
+        <p id="overlayText">Press play and tap anywhere to begin</p>
         <div class="tap-icon">👆</div>
         <div id="audioPlayerOverlay">
-            <button class="play-btn" id="playBtnOverlay" aria-label="Play music">▶️</button>
-            <span class="track-name" id="trackNameOverlay">🎵 Nakufa - Okello Max</span>
+            <button class="play-btn" id="playBtnOverlay">▶️</button>
+            <span class="track-name">🎵 Nakufa - Okello Max</span>
         </div>
     </div>
 
@@ -29,17 +29,6 @@
     <canvas id="confettiCanvas"></canvas>
     <canvas id="rainCanvas"></canvas>
 
-    <!-- ===== AUDIO VISUALIZER ===== -->
-    <div id="visualizer">
-        <div class="bar"></div><div class="bar"></div><div class="bar"></div>
-        <div class="bar"></div><div class="bar"></div><div class="bar"></div>
-        <div class="bar"></div><div class="bar"></div><div class="bar"></div>
-        <div class="bar"></div><div class="bar"></div><div class="bar"></div>
-        <div class="bar"></div><div class="bar"></div><div class="bar"></div>
-        <div class="bar"></div><div class="bar"></div><div class="bar"></div>
-        <div class="bar"></div><div class="bar"></div><div class="bar"></div>
-    </div>
-
     <!-- ===== STORY CONTAINER ===== -->
     <div id="storyContainer">
 
@@ -49,17 +38,17 @@
         <!-- LINE 2 -->
         <div class="story-line" id="line2">Then you smiled... 💕</div>
 
-        <!-- LINE 3 - NEW ORDER -->
+        <!-- LINE 3 -->
         <div class="story-line" id="line3">Then I saw this....</div>
 
-        <!-- PHOTO (appears after line 3) -->
+        <!-- PHOTO -->
         <div id="photoContainer">
-            <img id="herPhoto" src="IMG_20260719_151641_886.jpg" alt="Her beautiful smile" />
+            <img id="herPhoto" src="her-photo.jpg" alt="Her beautiful smile" />
             <div class="photo-glow"></div>
-            <div class="photo-caption">✨ Hii hapa... ✨</div>
+            <div class="photo-caption">✨ This one right here... ✨</div>
         </div>
 
-        <!-- LINE 4 - NEW -->
+        <!-- LINE 4 -->
         <div class="story-line" id="line4">...and I haven't been the same since. 🌙</div>
 
         <!-- TYPEWRITER -->
