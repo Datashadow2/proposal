@@ -199,7 +199,6 @@ function initAudio() {
             audioAvailable = true;
             console.log('🎵 Audio ready to play');
             updateAudioStatus('✅ Music ready!');
-            // Enable the overlay to allow progression
             enableProceed();
         });
         
@@ -214,12 +213,10 @@ function initAudio() {
                 }, 2000);
             } else {
                 updateAudioStatus('⚠️ Music unavailable - tap play to continue anyway');
-                // Allow proceed even without audio after 3 attempts
                 enableProceed();
             }
         });
         
-        // iOS needs this
         audio.addEventListener('loadedmetadata', () => {
             console.log('🎵 Audio metadata loaded');
         });
@@ -271,13 +268,8 @@ function toggleMusic() {
     ensureAudioInitialized();
     
     if (!audioAvailable || !audio) {
-        // Allow proceeding anyway if audio is unavailable
         if (overlayText) {
             overlayText.textContent = '💜 Tap anywhere to begin (music unavailable)';
-        }
-        // Still allow proceed
-        if (!hasStarted) {
-            overlayText.textContent = '💜 Tap anywhere to begin';
         }
         return;
     }
@@ -297,18 +289,15 @@ function toggleMusic() {
             if (overlayText) {
                 overlayText.textContent = '🎵 Music is playing! Tap anywhere to begin';
             }
-            // Enable proceed immediately when music starts
             enableProceed();
         }).catch((err) => {
             console.warn('Audio play error:', err);
             if (playBtnOverlay) playBtnOverlay.textContent = '▶️';
-            // On iOS, we need user interaction first
             if (err.name === 'NotAllowedError') {
                 if (overlayText) {
                     overlayText.textContent = '👆 Tap the play button again to start music';
                 }
             } else {
-                // Other errors - allow proceed anyway
                 if (overlayText) {
                     overlayText.textContent = '💜 Tap anywhere to begin';
                 }
@@ -321,7 +310,6 @@ function toggleMusic() {
 function ensureAudioInitialized() {
     if (!audioInitialized) {
         initAudio();
-        // Add status element if it doesn't exist
         addAudioStatusElement();
     }
 }
@@ -354,30 +342,25 @@ function startExperience() {
     
     ensureAudioInitialized();
     
-    // Check if audio is playing or if we should proceed anyway
     if (audioAvailable && !isPlaying) {
-        // Try to play audio
         if (audio) {
             audio.play().then(() => {
                 if (playBtnOverlay) playBtnOverlay.textContent = '⏸️';
                 isPlaying = true;
                 audioPlayed = true;
-                // Now proceed
                 proceedToExperience();
             }).catch(() => {
-                // If audio can't play, check if we should proceed anyway
                 if (proceedEnabled) {
                     proceedToExperience();
                 } else {
                     if (overlayText) {
                         overlayText.textContent = '👆 Please tap the play button first! 🎵';
-                        // Pulse the play button
-                        if (playBtnOverlay) {
-                            playBtnOverlay.style.animation = 'bounce 0.5s 3';
-                            setTimeout(() => { 
-                                if (playBtnOverlay) playBtnOverlay.style.animation = ''; 
-                            }, 1500);
-                        }
+                    }
+                    if (playBtnOverlay) {
+                        playBtnOverlay.classList.add('bounce');
+                        setTimeout(() => { 
+                            if (playBtnOverlay) playBtnOverlay.classList.remove('bounce');
+                        }, 1500);
                     }
                 }
             });
@@ -385,18 +368,16 @@ function startExperience() {
         return;
     }
     
-    // If audio is playing or not available, proceed
     if (isPlaying || !audioAvailable || proceedEnabled) {
         proceedToExperience();
     } else {
-        // Not playing and not enabled - show instruction
         if (overlayText) {
             overlayText.textContent = '👆 Please tap the play button first! 🎵';
         }
         if (playBtnOverlay) {
-            playBtnOverlay.style.animation = 'bounce 0.5s 3';
+            playBtnOverlay.classList.add('bounce');
             setTimeout(() => { 
-                if (playBtnOverlay) playBtnOverlay.style.animation = ''; 
+                if (playBtnOverlay) playBtnOverlay.classList.remove('bounce');
             }, 1500);
         }
     }
@@ -417,7 +398,6 @@ if (overlay) {
     });
 }
 
-// Initialize audio on first interaction
 document.addEventListener('click', ensureAudioInitialized, { once: true });
 document.addEventListener('touchstart', ensureAudioInitialized, { once: true });
 
@@ -449,46 +429,113 @@ function showCountdown() {
 }
 
 // =============================================================
-// 9. REVEAL STORY
+// 9. REVEAL STORY - 10 SECONDS EACH, NO OVERLAPS
 // =============================================================
 function revealStory() {
     if (!storyContainer) return;
     storyContainer.classList.add('show');
 
-    const steps = [
-        { el: line1, delay: 500, duration: 2000 },
-        { el: line2, delay: 3000, duration: 2000 },
-        { el: line3, delay: 5000, duration: 2000 },
-        { el: photoContainer, delay: 7000, duration: 2500, isPhoto: true },
-        { el: line4, delay: 10000, duration: 2000 },
-        { el: typewriterContainer, delay: 12000, duration: 100, isTypewriter: true }
+    const lines = [
+        { el: line1, id: 'line1' },
+        { el: line2, id: 'line2' },
+        { el: line3, id: 'line3' },
+        { el: line4, id: 'line4' }
     ];
 
-    steps.forEach((step, index) => {
-        setTimeout(() => {
-            if (step.isPhoto) {
-                if (step.el) step.el.classList.add('visible');
-                return;
-            }
-            if (step.isTypewriter) {
-                if (step.el) {
-                    step.el.classList.add('show');
-                    startTypewriter();
-                }
-                return;
-            }
-            if (index > 0) {
-                const prevStep = steps[index - 1];
-                if (prevStep && prevStep.el && !prevStep.isPhoto && !prevStep.isTypewriter) {
-                    prevStep.el.classList.remove('visible');
-                    prevStep.el.classList.add('hidden-line');
-                }
-            }
-            if (step.el) {
-                step.el.classList.add('visible');
-            }
-        }, step.delay);
+    // Hide all lines first
+    lines.forEach(line => {
+        if (line.el) {
+            line.el.classList.remove('visible');
+            line.el.classList.add('hidden-line');
+            line.el.style.display = 'none';
+        }
     });
+
+    // Hide photo initially
+    if (photoContainer) {
+        photoContainer.classList.remove('visible');
+        photoContainer.style.display = 'none';
+    }
+
+    // =============================================================
+    // TIMELINE: Each element gets 10 seconds
+    // =============================================================
+    
+    // === LINE 1: 0s - 10s ===
+    setTimeout(() => {
+        if (line1) {
+            line1.style.display = 'block';
+            line1.classList.remove('hidden-line');
+            line1.classList.add('visible');
+        }
+    }, 500);
+
+    // === LINE 1 disappears, LINE 2 appears: 10s - 20s ===
+    setTimeout(() => {
+        if (line1) {
+            line1.classList.remove('visible');
+            line1.classList.add('hidden-line');
+            setTimeout(() => { if (line1) line1.style.display = 'none'; }, 400);
+        }
+        if (line2) {
+            line2.style.display = 'block';
+            line2.classList.remove('hidden-line');
+            line2.classList.add('visible');
+        }
+    }, 10500);
+
+    // === LINE 2 disappears, LINE 3 appears: 20s - 30s ===
+    setTimeout(() => {
+        if (line2) {
+            line2.classList.remove('visible');
+            line2.classList.add('hidden-line');
+            setTimeout(() => { if (line2) line2.style.display = 'none'; }, 400);
+        }
+        if (line3) {
+            line3.style.display = 'block';
+            line3.classList.remove('hidden-line');
+            line3.classList.add('visible');
+        }
+    }, 20500);
+
+    // === PHOTO appears at 25s, stays until 35s ===
+    setTimeout(() => {
+        if (photoContainer) {
+            photoContainer.style.display = 'block';
+            photoContainer.classList.add('visible');
+        }
+    }, 25500);
+
+    // === LINE 3 disappears, LINE 4 appears, PHOTO disappears: 30s - 40s ===
+    setTimeout(() => {
+        if (photoContainer) {
+            photoContainer.classList.remove('visible');
+            setTimeout(() => { if (photoContainer) photoContainer.style.display = 'none'; }, 400);
+        }
+        if (line3) {
+            line3.classList.remove('visible');
+            line3.classList.add('hidden-line');
+            setTimeout(() => { if (line3) line3.style.display = 'none'; }, 400);
+        }
+        if (line4) {
+            line4.style.display = 'block';
+            line4.classList.remove('hidden-line');
+            line4.classList.add('visible');
+        }
+    }, 30500);
+
+    // === LINE 4 disappears, TYPEWRITER appears: 40s+ ===
+    setTimeout(() => {
+        if (line4) {
+            line4.classList.remove('visible');
+            line4.classList.add('hidden-line');
+            setTimeout(() => { if (line4) line4.style.display = 'none'; }, 400);
+        }
+        if (typewriterContainer) {
+            typewriterContainer.classList.add('show');
+            startTypewriter();
+        }
+    }, 40500);
 
     createLoveLetters();
 }
@@ -663,7 +710,6 @@ function sayYes() {
     
     launchConfetti();
     
-    // Ensure music is playing
     ensureAudioInitialized();
     if (audio && audioAvailable && !isPlaying) {
         audio.play().then(() => {
@@ -1090,7 +1136,6 @@ console.log('💜 She\'s about to say yes... ✨');
 console.log('💕 Made with love for Uncle Lee D Papa');
 console.log(`📸 Looking for ${totalImages} images...`);
 
-// Special iOS instruction
 if (isIOS && overlayText) {
     overlayText.textContent = '🎵 Tap play, then tap anywhere to begin';
 }
